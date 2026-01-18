@@ -33,8 +33,8 @@ export default function ChatWindow({ conversationId, initialMessages }: Props) {
   const promptInput = usePromptInput();
 
   const { messages, sendMessage, status, regenerate, stop } = useMyChat(
-    conversationId,
-    initialMessages
+    +conversationId,
+    initialMessages,
   );
 
   const handleSubmit = async (e: FormEvent) => {
@@ -54,7 +54,7 @@ export default function ChatWindow({ conversationId, initialMessages }: Props) {
             modelProvider,
             isRag,
           },
-        }
+        },
       );
       promptInput.clearState();
     }
@@ -63,7 +63,14 @@ export default function ChatWindow({ conversationId, initialMessages }: Props) {
   const handleRegeneration = async (deleteMessagesDto: DeleteMessagesDto) => {
     try {
       await deleteMessage(deleteMessagesDto);
-      regenerate({ messageId: deleteMessagesDto.aiMessageId });
+      regenerate({
+        messageId: deleteMessagesDto.aiMessageId,
+        body: {
+          conversationId: +conversationId,
+          modelProvider,
+          isRag,
+        },
+      });
     } catch {
       toast.error("예상치 못한 오류가 발생했습니다. 다시 시도해주세요.");
     }
@@ -91,7 +98,7 @@ export default function ChatWindow({ conversationId, initialMessages }: Props) {
         },
         {
           body: getRequestData(),
-        }
+        },
       );
     }
   }, [consumeMessage, consumeFiles, getRequestData, sendMessage]);
@@ -174,6 +181,7 @@ export default function ChatWindow({ conversationId, initialMessages }: Props) {
                                 size="sm"
                                 onClick={() =>
                                   handleRegeneration({
+                                    conversationId: +conversationId,
                                     userMessageId: messages[index - 1].id,
                                     aiMessageId: message.id,
                                   })
@@ -196,9 +204,9 @@ export default function ChatWindow({ conversationId, initialMessages }: Props) {
                                   handleCopy(
                                     message.parts
                                       .map((part) =>
-                                        part.type === "text" ? part.text : ""
+                                        part.type === "text" ? part.text : "",
                                       )
-                                      .join("")
+                                      .join(""),
                                   )
                                 }
                                 className="h-8 px-2"

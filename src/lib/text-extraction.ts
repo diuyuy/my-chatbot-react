@@ -15,7 +15,7 @@ const PDFJS_CDN_BASE = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VE
  * .txt 파일에서 텍스트를 추출합니다.
  */
 export async function extractTextFromTxtFile(
-  file: File
+  file: File,
 ): Promise<ExtractedTextData> {
   // MIME 타입이 비어있는 경우도 있으므로 확장자 체크를 우선시하거나 병행합니다.
   if (!file.type.startsWith("text/") && !file.name.endsWith(".txt")) {
@@ -61,7 +61,7 @@ async function loadPdfJs(): Promise<PDFJsLib> {
   try {
     // 이미 로드된 모듈이 있다면 재사용하거나, import() 캐싱을 이용합니다.
     const pdfjsLib = (await import(
-      /* webpackIgnore: true */
+      /* @vite-ignore */
       `${PDFJS_CDN_BASE}/pdf.min.mjs`
     )) as PDFJsLib;
 
@@ -81,7 +81,7 @@ async function loadPdfJs(): Promise<PDFJsLib> {
  * PDF 파일에서 텍스트를 추출합니다.
  */
 export async function extractTextFromPdf(
-  file: File
+  file: File,
 ): Promise<ExtractedTextData> {
   if (file.type !== "application/pdf" && !file.name.endsWith(".pdf")) {
     throw new Error("지원하지 않는 파일 형식입니다. .pdf 파일만 지원합니다.");
@@ -100,7 +100,7 @@ export async function extractTextFromPdf(
     // 병렬 처리를 위한 페이지 번호 배열 생성
     const pagePromises = Array.from(
       { length: pdf.numPages },
-      (_, i) => i + 1
+      (_, i) => i + 1,
     ).map(async (pageNum) => {
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();

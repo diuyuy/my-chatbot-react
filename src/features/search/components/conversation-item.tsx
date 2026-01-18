@@ -115,74 +115,79 @@ export function ConversationItem({
   // };
 
   return (
-    <>
-      <Link
-        to={`${ROUTER_PATH.CONVERSATION}/${conversation.id}`}
-        className="group relative border rounded-lg p-4 hover:bg-accent/50 transition-colors cursor-pointer"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-medium truncate">{conversation.title}</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {formatDistanceToNow(new Date(conversation.updatedAt), {
-                addSuffix: true,
-                locale: ko,
-              })}
-            </p>
-          </div>
+    <div>
+      <Link to={`${ROUTER_PATH.CONVERSATION}/${conversation.id}`}>
+        <div className="group relative border rounded-lg p-4 hover:bg-accent/50 transition-colors cursor-pointer">
+          {" "}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium truncate">{conversation.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {formatDistanceToNow(new Date(conversation.updatedAt), {
+                  addSuffix: true,
+                  locale: ko,
+                })}
+              </p>
+            </div>
 
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   handleNavigate();
-              // }}
-            >
-              <ExternalLinkIcon className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                // onClick={(e) => {
+                //   e.stopPropagation();
+                //   handleNavigate();
+                // }}
+              >
+                <ExternalLinkIcon className="h-4 w-4" />
+              </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <EllipsisIcon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" align="start">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleFavorite();
-                  }}
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  asChild
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <StarIcon className="text-foreground" />
-                  {conversation.isFavorite ? "즐겨찾기 제거" : "즐겨찾기 추가"}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRename();
-                  }}
-                >
-                  <PencilIcon className="text-foreground" />
-                  이름 변경
-                </DropdownMenuItem>
-                <Separator />
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteClick();
-                  }}
-                >
-                  <TrashIcon className="text-destructive" />
-                  <p className="text-destructive hover:text-destructive">
-                    삭제
-                  </p>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <EllipsisIcon className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="right" align="start">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavorite();
+                    }}
+                  >
+                    <StarIcon className="text-foreground" />
+                    {conversation.isFavorite
+                      ? "즐겨찾기 제거"
+                      : "즐겨찾기 추가"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRename();
+                    }}
+                  >
+                    <PencilIcon className="text-foreground" />
+                    이름 변경
+                  </DropdownMenuItem>
+                  <Separator />
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick();
+                    }}
+                  >
+                    <TrashIcon className="text-destructive" />
+                    <p className="text-destructive hover:text-destructive">
+                      삭제
+                    </p>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </Link>
@@ -199,6 +204,6 @@ export function ConversationItem({
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleDelete}
       />
-    </>
+    </div>
   );
 }

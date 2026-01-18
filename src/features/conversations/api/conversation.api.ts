@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/constants/base-url";
+import { MY_API_KEY } from "@/constants/my-api-key";
 import type { ErrorResponse, SuccessResponse } from "@/types/common.type";
 import type {
   Conversation,
@@ -20,6 +21,7 @@ export async function fetchHistoryMessages(): Promise<
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${MY_API_KEY}`,
     },
   });
 
@@ -33,7 +35,7 @@ export async function fetchHistoryMessages(): Promise<
 
 export async function fetchConversationsByPagination(
   cursor?: string,
-  filter?: string
+  filter?: string,
 ): Promise<SuccessResponse<PaginationConversation>> {
   const requestUrl = new URL(`${BASE_URL}/api/conversations`);
   if (cursor) {
@@ -49,6 +51,7 @@ export async function fetchConversationsByPagination(
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${MY_API_KEY}`,
     },
   });
 
@@ -61,12 +64,13 @@ export async function fetchConversationsByPagination(
 }
 
 export async function createNewConversation(message: string): Promise<string> {
-  const response = await fetch("/api/conversations/new", {
+  const response = await fetch(`${BASE_URL}/api/conversations/new`, {
     method: "post",
     body: JSON.stringify({ message }),
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${MY_API_KEY}`,
     },
   });
 
@@ -84,10 +88,11 @@ export async function createNewConversation(message: string): Promise<string> {
 export async function fetchFavoriteConversations(): Promise<
   SuccessResponse<Conversation[]>
 > {
-  const response = await fetch("/api/conversations/favorites", {
+  const response = await fetch(`${BASE_URL}/api/conversations/favorites`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${MY_API_KEY}`,
     },
   });
 
@@ -101,16 +106,20 @@ export async function fetchFavoriteConversations(): Promise<
 
 export async function updateConversationTitle(
   conversationId: string,
-  updateConversationTitleDto: UpdateConversationTitleDto
+  updateConversationTitleDto: UpdateConversationTitleDto,
 ): Promise<SuccessResponse<null>> {
-  const response = await fetch(`/api/conversations/${conversationId}`, {
-    method: "PATCH",
-    body: JSON.stringify(updateConversationTitleDto),
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${BASE_URL}/api/conversations/${conversationId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(updateConversationTitleDto),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${MY_API_KEY}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -126,15 +135,19 @@ export async function updateConversationTitle(
  * @returns 삭제된 대화 정보
  */
 export async function deleteConversation(
-  conversationId: string
+  conversationId: string,
 ): Promise<SuccessResponse<DeleteConversationData>> {
-  const response = await fetch(`/api/conversations/${conversationId}`, {
-    method: "DELETE",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${BASE_URL}/api/conversations/${conversationId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${MY_API_KEY}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -150,17 +163,18 @@ export async function deleteConversation(
  * @returns 성공 응답
  */
 export async function addConversationToFavorites(
-  conversationId: string
+  conversationId: string,
 ): Promise<SuccessResponse<null>> {
   const response = await fetch(
-    `/api/conversations/${conversationId}/favorites`,
+    `${BASE_URL}/api/conversations/${conversationId}/favorites`,
     {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${MY_API_KEY}`,
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -177,17 +191,18 @@ export async function addConversationToFavorites(
  * @returns 성공 응답
  */
 export async function removeConversationFromFavorites(
-  conversationId: string
+  conversationId: string,
 ): Promise<SuccessResponse<null>> {
   const response = await fetch(
-    `/api/conversations/${conversationId}/favorites`,
+    `${BASE_URL}/api/conversations/${conversationId}/favorites`,
     {
       method: "DELETE",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${MY_API_KEY}`,
       },
-    }
+    },
   );
 
   if (!response.ok) {

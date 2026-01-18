@@ -1,11 +1,10 @@
 import { ROUTER_PATH } from "@/constants/router-path";
-import type { User } from "better-auth";
-import { Navigate, Outlet, useLoaderData } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
 export default function ProtectedRoute() {
-  const user = useLoaderData<User | null>();
+  const isLoggedIn = true;
 
-  if (!user) {
+  if (!isLoggedIn) {
     return <Navigate to={ROUTER_PATH.LOGIN} replace />;
   }
 

@@ -1,3 +1,5 @@
+import { BASE_URL } from "@/constants/base-url";
+import { MY_API_KEY } from "@/constants/my-api-key";
 import { QUERY_KEYS } from "@/constants/query-keys";
 import type { MyUIMessage } from "@/features/messages/types/message.type";
 import { useChat } from "@ai-sdk/react";
@@ -7,8 +9,8 @@ import { toast } from "sonner";
 import { useIsCreatingNewConversation } from "../stores/use-is-creating-new-conversation";
 
 export const useMyChat = (
-  conversationId: string,
-  initialMessages?: MyUIMessage[]
+  conversationId: number,
+  initialMessages?: MyUIMessage[],
 ) => {
   const { isCreating, setIsCreated } = useIsCreatingNewConversation();
   const queryClient = useQueryClient();
@@ -20,9 +22,12 @@ export const useMyChat = (
     }),
     messages: initialMessages,
     transport: new DefaultChatTransport({
-      api: "/api/conversations",
+      api: `${BASE_URL}/api/conversations`,
       prepareSendMessagesRequest: ({ messages, body }) => {
         return {
+          headers: {
+            Authorization: `Bearer ${MY_API_KEY}`,
+          },
           body: {
             message: messages[messages.length - 1],
             conversationId,

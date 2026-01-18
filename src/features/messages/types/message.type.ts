@@ -13,6 +13,7 @@ export type MyMetadataPart = z.infer<typeof metadataSchema>;
 export type MyUIMessage = UIMessage<MyMetadataPart>;
 
 export type DeleteMessagesDto = {
+  conversationId: number;
   userMessageId: string;
   aiMessageId: string;
 };

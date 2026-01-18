@@ -114,8 +114,8 @@
 }
 
 @font-face {
-  font-family: 'pretendard';
-  src: url('src/assets/fonts/PretendardVariable.woff2') format('woff2');
+  font-family: "pretendard";
+  src: url("./assets/fonts/PretendardVariable.woff2") format("woff2");
   font-style: normal;
   font-display: swap;
 }
@@ -125,7 +125,21 @@
     @apply border-border outline-ring/50;
   }
   body {
-    font-family: 'pretendard', sans-serif;
+    font-family: "pretendard", sans-serif;
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Chrome, Safari, Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    /* IE and Edge */
+    -ms-overflow-style: none;
+    /* Firefox */
+    scrollbar-width: none;
   }
 }

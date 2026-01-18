@@ -1,6 +1,6 @@
+import { useTheme } from "@/providers/theme/use-theme";
 import { Check, Copy } from "lucide-react";
 import mermaid from "mermaid";
-import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
@@ -26,10 +26,10 @@ export function CodeBlock({ language, children, inline }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const [mermaidSvg, setMermaidSvg] = useState<string>("");
   const mermaidRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme(); // 현재 테마 가져오기
+  const { theme } = useTheme(); // 현재 테마 가져오기
 
   // 테마에 따라 스타일 선택
-  const syntaxTheme = resolvedTheme === "dark" ? vscDarkPlus : vs;
+  const syntaxTheme = theme === "dark" ? vscDarkPlus : vs;
 
   // Handle mermaid diagram rendering
   useEffect(() => {

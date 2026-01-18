@@ -15,3 +15,12 @@ export type Resource = {
 };
 
 export type ResourcePagination = SuccessResponse<PaginationObject<Resource>>;
+
+export type ResourceDetail = Resource & {
+  embeddings: {
+    id: number;
+    content: string;
+    tag: string | null;
+    createdAt: Date;
+  }[];
+};
