@@ -48,6 +48,47 @@ export async function extractTextFromTxtFile(
 }
 
 /**
+ * .md 또는 .markdown 파일에서 텍스트를 추출합니다.
+ */
+export async function extractTextFromMarkdown(
+  file: File,
+): Promise<ExtractedTextData> {
+  if (
+    !file.type.startsWith("text/") &&
+    !file.name.endsWith(".md") &&
+    !file.name.endsWith(".markdown")
+  ) {
+    throw new Error(
+      "지원하지 않는 파일 형식입니다. .md 또는 .markdown 파일만 지원합니다.",
+    );
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (!content) {
+        // 빈 파일일 경우 처리
+        resolve({ content: "", resourceName: file.name });
+        return;
+      }
+      resolve({
+        content: content.trim(),
+        resourceName: file.name,
+      });
+    };
+
+    reader.onerror = () => {
+      reject(new Error("파일을 읽는 중 오류가 발생했습니다."));
+    };
+
+    // 기본 UTF-8. 필요시 인코딩 감지 로직 추가 가능
+    reader.readAsText(file, "UTF-8");
+  });
+}
+
+/**
  * PDF.js 라이브러리를 동적으로 로드합니다. (ES Module 방식)
  */
 

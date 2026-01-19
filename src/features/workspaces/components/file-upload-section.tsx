@@ -1,28 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { QUERY_KEYS } from "@/constants/query-keys";
-import {
-  extractTextFromPdf,
-  extractTextFromTxtFile,
-  type ExtractedTextData,
-} from "@/lib/text-extraction";
-
-import { useQueryClient } from "@tanstack/react-query";
 import { FileText, Upload, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { toast } from "sonner";
-import { createEmbedding } from "../api/rag.api";
+import { useUploadFilesMutation } from "../hooks/use-upload-files-mutation";
 
 export function FileUploadSection() {
-  const [file, setFile] = useState<File | null>(null);
-  const [isExtracting, setIsExtracting] = useState(false);
-  const queryClient = useQueryClient();
+  const [files, setFiles] = useState<File[]>([]);
+  const uploadFilesMutation = useUploadFilesMutation();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
+      setFiles((prev) => [...prev, ...acceptedFiles]);
     }
   }, []);
 
@@ -30,53 +20,21 @@ export function FileUploadSection() {
     onDrop,
     accept: {
       "text/plain": [".txt"],
+      "text/markdown": [".md", ".markdown"],
       "application/pdf": [".pdf"],
     },
-    maxFiles: 1,
-    multiple: false,
+    multiple: true,
   });
 
-  const removeFile = () => {
-    setFile(null);
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleUpload = async () => {
-    if (!file) return;
-    setIsExtracting(true);
+    if (files.length === 0) return;
 
-    try {
-      let extractedData: ExtractedTextData;
-
-      // .txt 파일인 경우 텍스트 추출
-      if (file.type.includes("text/plain") || file.name.endsWith(".txt")) {
-        extractedData = await extractTextFromTxtFile(file);
-      }
-      // .pdf 파일인 경우 텍스트 추출
-      else if (
-        file.type.includes("application/pdf") ||
-        file.name.endsWith(".pdf")
-      ) {
-        extractedData = await extractTextFromPdf(file);
-      } else {
-        throw new Error("지원하지 않는 파일 형식입니다.");
-      }
-
-      await createEmbedding(extractedData);
-
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.getRagQueryKeys(),
-      });
-      toast.success(`${file.name} 텍스트 추출 완료`);
-    } catch (error) {
-      console.error("File processing error:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "파일 처리 중 오류가 발생했습니다."
-      );
-    } finally {
-      setIsExtracting(false);
-    }
+    await uploadFilesMutation.mutateAsync(files);
+    setFiles([]);
   };
 
   return (
@@ -106,34 +64,41 @@ export function FileUploadSection() {
                   파일을 드래그 앤 드롭하거나 클릭하여 선택하세요
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  .txt 또는 .pdf 파일만 업로드 가능
+                  .txt, .md, .pdf 파일 업로드 가능 (여러 파일 선택 가능)
                 </p>
               </>
             )}
           </div>
         </div>
 
-        {file && (
-          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-            <div className="flex items-center gap-2">
-              <FileText className="size-5 text-primary" />
-              <span className="text-sm font-medium">{file.name}</span>
-              <span className="text-xs text-muted-foreground">
-                ({(file.size / 1024).toFixed(2)} KB)
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={removeFile}
-              className="hover:bg-destructive/10 hover:text-destructive"
-            >
-              <X className="size-4" />
-            </Button>
+        {files.length > 0 && (
+          <div className="space-y-2">
+            {files.map((file, index) => (
+              <div
+                key={`${file.name}-${index}`}
+                className="flex items-center justify-between p-3 bg-muted rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="size-5 text-primary" />
+                  <span className="text-sm font-medium">{file.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({(file.size / 1024).toFixed(2)} KB)
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => removeFile(index)}
+                  className="hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <X className="size-4" />
+                </Button>
+              </div>
+            ))}
           </div>
         )}
 
-        {isExtracting && (
+        {uploadFilesMutation.isPending && (
           <div className="flex items-center justify-center gap-2 p-3 bg-primary/10 rounded-lg">
             <Spinner className="size-4 text-primary" />
             <span className="text-sm font-medium text-primary">
@@ -144,10 +109,10 @@ export function FileUploadSection() {
 
         <Button
           onClick={handleUpload}
-          disabled={!file || isExtracting}
+          disabled={files.length === 0 || uploadFilesMutation.isPending}
           className="w-full"
         >
-          업로드
+          업로드 ({files.length}개 파일)
         </Button>
       </CardContent>
     </Card>
